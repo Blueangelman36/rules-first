@@ -1,0 +1,83 @@
+name: Release
+
+# A version tag publishes the package to PyPI through trusted publishing. That needs
+# the one-time setup in the README ("Publishing a release"), ending with the
+# repository variable PUBLISH_TO_PYPI set to `true`; until then the publish job is
+# skipped and the tag only produces a GitHub release with the wheel attached.
+#
+# Nothing here runs on a normal push.
+
+on:
+  push:
+    tags: ["v*"]
+
+jobs:
+  build:
+    name: build and check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.12"
+
+      - name: Tests must pass before anything is built
+        run: python -m unittest discover -s tests -t .
+
+      # A tag that disagrees with the code publishes a version number that means
+      # nothing, and PyPI never lets that number be used again.
+      - name: The tag, the package and the module agree on the version
+        run: |
+          tag="${GITHUB_REF_NAME#v}"
+          module=$(python -c "import rules_first; print(rules_first.__version__)")
+          declared=$(python -c "import tomllib; print(tomllib.load(open('pyproject.toml','rb'))['project']['version'])")
+          if [ "$tag" != "$module" ] || [ "$tag" != "$declared" ]; then
+            echo "::error::tag v$tag, rules_first.__version__ $module, pyproject.toml $declared"
+            exit 1
+          fi
+
+      - name: Wheel and sdist
+        run: |
+          python -m pip install --upgrade build twine
+          python -m build
+          python -m twine check --strict dist/*
+      - uses: actions/upload-artifact@v7
+        with:
+          name: distribution
+          path: dist/*
+          if-no-files-found: error
+
+  github-release:
+    name: GitHub release
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write  # creating the release, and nothing else
+    steps:
+      - uses: actions/download-artifact@v8
+        with:
+          name: distribution
+          path: dist
+      - name: Checksums
+        run: cd dist && sha256sum * > SHA256SUMS
+      - uses: softprops/action-gh-release@v3
+        with:
+          files: dist/*
+          generate_release_notes: true
+
+  publish:
+    name: publish to PyPI
+    needs: build
+    # A repository variable, not an environment one: this `if` is evaluated before
+    # the job enters the environment, so an environment variable is never seen here.
+    if: vars.PUBLISH_TO_PYPI == 'true'
+    runs-on: ubuntu-latest
+    environment: pypi
+    permissions:
+      id-token: write  # the OIDC token trusted publishing uses, and nothing else
+    steps:
+      - uses: actions/download-artifact@v8
+        with:
+          name: distribution
+          path: dist/
+      - uses: pypa/gh-action-pypi-publish@release/v1

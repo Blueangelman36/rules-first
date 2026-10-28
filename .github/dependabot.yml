@@ -1,0 +1,11 @@
+# Weekly pull requests when an action this repository uses has a new version,
+# grouped into one. The library has no dependencies to update.
+version: 2
+updates:
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+    groups:
+      actions:
+        patterns: ["*"]

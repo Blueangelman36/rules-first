@@ -1,0 +1,33 @@
+[build-system]
+requires = ["setuptools>=77"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "rules-first"
+version = "0.1.0"
+description = "Sort repetitive messages with rules, and let a model write each rule once."
+readme = "README.md"
+requires-python = ">=3.10"
+license = "MIT"
+license-files = ["LICENSE"]
+keywords = ["classification", "logs", "rules", "llm", "cost", "claude"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "Programming Language :: Python :: 3",
+    "Topic :: System :: Logging",
+    "Topic :: Text Processing",
+]
+# The library itself needs nothing. The Claude teacher is optional, and is the only
+# part that can spend money.
+dependencies = []
+
+[project.optional-dependencies]
+claude = ["anthropic>=2.3"]
+
+[project.urls]
+Homepage = "https://github.com/Blueangelman36/rules-first"
+Source = "https://github.com/Blueangelman36/rules-first"
+
+[tool.setuptools]
+packages = ["rules_first"]
