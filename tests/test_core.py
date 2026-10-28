@@ -53,7 +53,7 @@ class TestFingerprint(unittest.TestCase):
         self.assertEqual(len({fp.fingerprint(d) for d in DISK}), 1)
 
     def test_different_literal_words_stay_different(self):
-        # Collapsing literal words made two kinds of message share one rule in sdrelay.
+        # Collapsing literal words made two kinds of message share one rule in the earlier classifier.
         fp = Fingerprinter()
         self.assertNotEqual(fp.fingerprint("DMR RX slot 1 talkgroup 42"),
                             fp.fingerprint("TETRA-BURST slot 1 talkgroup 42"))
@@ -63,7 +63,7 @@ class TestFingerprint(unittest.TestCase):
         self.assertNotEqual(fp.fingerprint("user 42 logged in"), fp.fingerprint("user 42 logged out"))
 
     def test_an_all_digit_address_is_a_number_not_hex(self):
-        # sdrelay read the seven-digit pager address as <HEX>.
+        # The earlier classifier read the seven-digit pager address as <HEX>.
         self.assertIn("Address: <INT>", Fingerprinter().template(PAGES[0]))
         self.assertIn("<HEX>", Fingerprinter().template("crc 0x1f2e failed"))
 

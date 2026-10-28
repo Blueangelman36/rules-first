@@ -1,6 +1,6 @@
 """Hard ceilings on what the teacher may spend, kept in SQLite so a restart cannot reset them.
 
-Two rules from running this for real (sdrelay, black-chamber):
+Two rules from running this for real, on radio-monitoring stations:
 
 * **A request is counted before it is sent.** Counting only successes looks fairer and removes
   the protection exactly when it is needed: a loop retrying against a failing service would
