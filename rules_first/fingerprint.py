@@ -21,7 +21,7 @@ Two steps:
    message sharing a fingerprint is the worst failure this file can have, because one learned
    rule then silently claims the other's traffic.
 
-Adapted from sdrelay, whose version masked any run of three plain words. That left the first
+Adapted from an earlier classifier, whose version masked any run of three plain words. That left the first
 word of a message body in place, so ``Alpha: ENGINE 12 RESPOND`` and ``Alpha: LADDER 4 STAGING``
 were two shapes (and two paid questions), and it read a seven-digit address as hex.
 """
